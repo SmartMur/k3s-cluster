@@ -39,7 +39,7 @@ data:
     gem "jekyll-seo-tag"
     gem "jekyll-archives"
 
-  index.html: |
+  index.md: |
     ---
     layout: home
     ---

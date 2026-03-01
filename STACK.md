@@ -147,7 +147,7 @@ ssh ray@192.168.13.69 "nginx -c /mnt/strange/ray/k3s-relay/nginx.conf -s reload"
 
 - Pool: `192.168.100.120–192.168.100.130`
 - Traefik VIP: `192.168.100.120` (LoadBalancer service)
-- Config: `/Users/dre/k3s-cluster/manifests/ingress/metallb-pool.yml`
+- Config: IPAddressPool created inline by Ansible in `ansible/playbook-nfs.yml`
 
 ---
 
@@ -247,7 +247,7 @@ ssh ray@192.168.13.69 "ls /mnt/strange/NSF_Prox/k3s/"
 ├── manifests/
 │   ├── namespaces.yml              # All namespace definitions
 │   ├── ingress/
-│   │   ├── metallb-pool.yml        # MetalLB IP pool
+│   │   ├── (MetalLB pool — created inline by ansible/playbook-nfs.yml)
 │   │   ├── traefik-defaults.yml    # TLS store, HTTP→HTTPS redirect, security headers
 │   │   └── traefik-dashboard.yml   # Traefik dashboard IngressRoute
 │   ├── storage/

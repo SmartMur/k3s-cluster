@@ -1,0 +1,32 @@
+name: Feature Request
+description: Suggest a new app, automation improvement, or cluster enhancement
+labels: [enhancement]
+body:
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - New app manifest
+        - Terraform improvement
+        - Ansible improvement
+        - CI/CD enhancement
+        - Security hardening
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What would you like?
+      description: Describe the feature and why it's useful.
+    validations:
+      required: true
+
+  - type: textarea
+    id: approach
+    attributes:
+      label: Proposed approach
+      description: How would you implement this? (optional)

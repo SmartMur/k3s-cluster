@@ -10,7 +10,9 @@ die()  { echo -e "${RED}[notify]${NC} $*"; exit 1; }
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 MANIFEST_DIR="${REPO_ROOT}/manifests/apps/notify"
-SOURCE_DIR="${1:-/Users/dre/Desktop/LABing/Projects/Notify}"
+SOURCE_DIR="${1:-${NOTIFY_PROJECT_DIR:-/Users/dre/Desktop/LABing/Projects/Notify}}"
+
+[[ -d "${SOURCE_DIR}" ]] || die "source dir not found: ${SOURCE_DIR} — set NOTIFY_PROJECT_DIR or pass as \$1"
 
 command -v kubectl >/dev/null 2>&1 || die "kubectl is required"
 kubectl cluster-info >/dev/null 2>&1 || die "cannot reach k3s cluster"

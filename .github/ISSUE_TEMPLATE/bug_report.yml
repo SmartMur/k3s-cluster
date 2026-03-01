@@ -1,0 +1,60 @@
+name: Bug Report
+description: Report something broken in the cluster or automation
+labels: [bug]
+body:
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      options:
+        - Terraform (VM provisioning)
+        - Ansible (cluster setup)
+        - App manifest
+        - CI/CD pipeline
+        - Storage (NFS/TrueNAS)
+        - Networking/Ingress
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: app
+    attributes:
+      label: App (if applicable)
+      description: Which app manifest is affected?
+      placeholder: e.g. vaultwarden, n8n, homepage
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the issue and what you expected instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Commands, config changes, or sequence of events.
+      render: shell
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Relevant versions and context.
+      value: |
+        - Proxmox VE:
+        - K3s version:
+        - Terraform version:
+        - Ansible version:
+        - Node OS:
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / error output
+      render: shell
