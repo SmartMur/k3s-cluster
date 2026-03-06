@@ -4,19 +4,19 @@
 [![IaC](https://img.shields.io/badge/IaC-Terraform%20%2B%20Ansible-22c55e)](#)
 [![Security](https://img.shields.io/badge/Security-Scrubbed%20%E2%9C%93-22c55e)](#)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-1f6feb?logo=pre-commit)](https://pre-commit.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/SmartMur/smartmur-homelab-k3s/blob/main/LICENSE)
 
 Production-oriented automation for provisioning and operating a multi-node k3s cluster across Proxmox hosts, with TrueNAS-backed persistent storage and Traefik ingress.
 
-Beginner journey (from scratch): `docs/BEGINNER_JOURNEY.md`
-Quick operator start: `docs/GETTING_STARTED.md`
-Kubernetes manager + Dockhand sync: `docs/DOCKHAND_HEADLAMP_WORKFLOW.md`
-Notify monitoring + alerting: `docs/NOTIFY_MONITORING.md`
-Latest live ops audit: `docs/OPERATIONS_AUDIT_2026-02-22.md`
-Contributing: `CONTRIBUTING.md`
-Security policy: `SECURITY.md`
-Security rulebook: `docs/SECURITY_RULEBOOK.md`
-Deep environment reference: `STACK.md`
+Beginner journey (from scratch): [Beginner Journey](getting-started/beginner-journey.md)
+Quick operator start: [Getting Started](getting-started/getting-started.md)
+Kubernetes manager + Dockhand sync: [Dockhand + Headlamp Workflow](guides/dockhand-headlamp-workflow.md)
+Notify monitoring + alerting: [Notify Monitoring](operations/notify-monitoring.md)
+Latest live ops audit: [Operations Audit](operations/operations-audit.md)
+Contributing: [Contributing](reference/contributing.md)
+Security policy: [Security](reference/security.md)
+Security rulebook: [Security Rulebook](reference/security-rulebook.md)
+Deep environment reference: [Stack](guides/stack.md)
 
 ## Overview
 

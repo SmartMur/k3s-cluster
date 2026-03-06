@@ -254,7 +254,7 @@ kubectl get events -A --sort-by='.lastTimestamp' | tail -20
 | **90 days** | Proxmox API token, Vaultwarden admin token, Authentik secret key, Discourse passwords, Notify channel credentials (Telegram/Twilio/SMTP), NPM admin password | 2026-05-29 |
 | **180 days** | k3s cluster token, n8n JWT secret, Code Server password, Pangolin app secret, Cloudflare API token | 2026-08-27 |
 | **365 days** | SSH keys | 2027-02-28 |
-| **On compromise** | Any secret — immediately rotate, follow [Security Incident Playbook](SECURITY_RULEBOOK.md#4-security-incident-playbook) | — |
+| **On compromise** | Any secret — immediately rotate, follow [Security Incident Playbook](../reference/security-rulebook.md#4-security-incident-playbook) | — |
 
 ### Rotation Checklist (run quarterly)
 
