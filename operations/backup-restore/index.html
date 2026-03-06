@@ -1,0 +1,2452 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://smartmur.github.io/smartmur-homelab-k3s/operations/backup-restore/">
+      
+      
+        <link rel="prev" href="../../getting-started/beginner-journey/">
+      
+      
+        <link rel="next" href="../secret-rotation/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/smartmur-logo.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.4">
+    
+    
+      
+        <title>Backup & Restore - SmartMur Homelab K3s</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="deep-purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#backup-restore-runbook" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="SmartMur Homelab K3s" class="md-header__button md-logo" aria-label="SmartMur Homelab K3s" data-md-component="logo">
+      
+  <img src="../../assets/smartmur-logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SmartMur Homelab K3s
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Backup & Restore
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="deep-purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="deep-purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/SmartMur/smartmur-homelab-k3s" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SmartMur/smartmur-homelab-k3s
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../getting-started/getting-started/" class="md-tabs__link">
+          
+  
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/dockhand-headlamp-workflow/" class="md-tabs__link">
+          
+  
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reference/security/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../changelog/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="SmartMur Homelab K3s" class="md-nav__button md-logo" aria-label="SmartMur Homelab K3s" data-md-component="logo">
+      
+  <img src="../../assets/smartmur-logo.svg" alt="logo">
+
+    </a>
+    SmartMur Homelab K3s
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/SmartMur/smartmur-homelab-k3s" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SmartMur/smartmur-homelab-k3s
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/beginner-journey/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beginner Journey
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup & Restore
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup & Restore
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-to-back-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What to Back Up
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. What to Back Up">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#local-path-pvcs-not-on-truenas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        local-path PVCs (not on TrueNAS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-truenas-nfs-snapshots-zfs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. TrueNAS NFS Snapshots (ZFS)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. TrueNAS NFS Snapshots (ZFS)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-a-snapshot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create a snapshot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list-snapshots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        List snapshots
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restore-from-snapshot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restore from snapshot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#replicate-to-another-pool-or-host" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Replicate to another pool or host
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automate-via-truenas-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automate via TrueNAS UI
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-k3s-etcd-snapshots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. k3s etcd Snapshots
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. k3s etcd Snapshots">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#save-a-snapshot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Save a snapshot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list-snapshots_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        List snapshots
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#copy-snapshots-off-node" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Copy snapshots off-node
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restore-from-snapshot_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restore from snapshot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#built-in-automatic-snapshots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Built-in automatic snapshots
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-terraform-state-backup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Terraform State Backup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Terraform State Backup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#back-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Back up
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recover-without-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recover without state
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-secret-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Secret Recovery
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Secret Recovery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#export-existing-secrets-before-disaster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Export existing secrets (before disaster)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recreate-from-scratch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recreate from scratch
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-full-cluster-restore-bare-metal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Full Cluster Restore (Bare Metal)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Full Cluster Restore (Bare Metal)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-by-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step-by-step
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restoring-kubeconfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restoring kubeconfig
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-single-app-restore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Single App Restore
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Single App Restore">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-restore-vaultwarden" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: restore vaultwarden
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#if-pvc-data-is-lost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        If PVC data is lost
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#general-pattern-for-any-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        General pattern for any app
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Validation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Validation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cluster-health" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cluster health
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Storage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#networking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Networking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#app-level" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        App-level
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secrets-present" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Secrets present
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#etcd-health" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        etcd health
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../secret-rotation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secret Rotation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../notify-monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notifications & Monitoring
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operations-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations Audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/dockhand-headlamp-workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dockhand & Headlamp Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/stack/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stack Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/security-rulebook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security Rulebook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/support/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Support
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-to-back-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What to Back Up
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. What to Back Up">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#local-path-pvcs-not-on-truenas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        local-path PVCs (not on TrueNAS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-truenas-nfs-snapshots-zfs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. TrueNAS NFS Snapshots (ZFS)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. TrueNAS NFS Snapshots (ZFS)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-a-snapshot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create a snapshot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list-snapshots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        List snapshots
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restore-from-snapshot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restore from snapshot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#replicate-to-another-pool-or-host" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Replicate to another pool or host
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automate-via-truenas-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automate via TrueNAS UI
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-k3s-etcd-snapshots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. k3s etcd Snapshots
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. k3s etcd Snapshots">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#save-a-snapshot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Save a snapshot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list-snapshots_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        List snapshots
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#copy-snapshots-off-node" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Copy snapshots off-node
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restore-from-snapshot_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restore from snapshot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#built-in-automatic-snapshots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Built-in automatic snapshots
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-terraform-state-backup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Terraform State Backup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Terraform State Backup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#back-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Back up
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recover-without-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recover without state
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-secret-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Secret Recovery
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Secret Recovery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#export-existing-secrets-before-disaster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Export existing secrets (before disaster)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recreate-from-scratch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recreate from scratch
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-full-cluster-restore-bare-metal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Full Cluster Restore (Bare Metal)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Full Cluster Restore (Bare Metal)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-by-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step-by-step
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restoring-kubeconfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restoring kubeconfig
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-single-app-restore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Single App Restore
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Single App Restore">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-restore-vaultwarden" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: restore vaultwarden
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#if-pvc-data-is-lost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        If PVC data is lost
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#general-pattern-for-any-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        General pattern for any app
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Validation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Validation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cluster-health" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cluster health
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Storage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#networking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Networking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#app-level" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        App-level
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secrets-present" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Secrets present
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#etcd-health" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        etcd health
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="backup-restore-runbook">Backup &amp; Restore Runbook<a class="headerlink" href="#backup-restore-runbook" title="Permanent link">&para;</a></h1>
+<p>Last updated: 2026-02-28</p>
+<hr />
+<h2 id="1-what-to-back-up">1. What to Back Up<a class="headerlink" href="#1-what-to-back-up" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Asset</th>
+<th>Location</th>
+<th>Method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>App data (PVCs on NFS)</td>
+<td>TrueNAS <code>/mnt/strange/NSF_Prox/k3s/</code></td>
+<td>ZFS snapshots + replication</td>
+</tr>
+<tr>
+<td>App data (local-path PVCs)</td>
+<td>Worker node local disk</td>
+<td>Manual copy or node snapshot</td>
+</tr>
+<tr>
+<td>k3s etcd</td>
+<td>k3s-master-01 <code>/var/lib/rancher/k3s/server/db/</code></td>
+<td><code>k3s etcd-snapshot</code></td>
+</tr>
+<tr>
+<td>Terraform state</td>
+<td><code>terraform/terraform.tfstate</code> (local, gitignored)</td>
+<td>Copy to secure off-host location</td>
+</tr>
+<tr>
+<td>Terraform vars</td>
+<td><code>terraform/terraform.tfvars</code> (local, gitignored)</td>
+<td>Copy to secure off-host location</td>
+</tr>
+<tr>
+<td>kubeconfig</td>
+<td><code>~/.kube/config</code> or <code>kubeconfig-raw.yml</code> (gitignored)</td>
+<td>Regenerated on cluster rebuild</td>
+</tr>
+<tr>
+<td>Runtime secrets</td>
+<td>Kubernetes Secrets (in-cluster only)</td>
+<td>Export or recreate from password manager</td>
+</tr>
+<tr>
+<td>Ansible inventory</td>
+<td><code>ansible/group_vars/all.yml</code> (tracked in git)</td>
+<td>Git repo</td>
+</tr>
+<tr>
+<td>App manifests</td>
+<td><code>manifests/</code> (tracked in git)</td>
+<td>Git repo</td>
+</tr>
+</tbody>
+</table>
+<h3 id="local-path-pvcs-not-on-truenas">local-path PVCs (not on TrueNAS)<a class="headerlink" href="#local-path-pvcs-not-on-truenas" title="Permanent link">&para;</a></h3>
+<p>These PVCs use <code>local-path</code> and live on the worker node, not TrueNAS NFS:</p>
+<table>
+<thead>
+<tr>
+<th>PVC</th>
+<th>Namespace</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>authentik-postgres-data</code></td>
+<td>authentik</td>
+</tr>
+<tr>
+<td><code>code-server-workspace</code></td>
+<td>apps</td>
+</tr>
+<tr>
+<td><code>n8n-data</code></td>
+<td>n8n</td>
+</tr>
+</tbody>
+</table>
+<p>Back these up separately -- they are not covered by TrueNAS ZFS snapshots.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Find which node hosts a local-path PV</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>kubectl<span class="w"> </span>get<span class="w"> </span>pv<span class="w"> </span>-o<span class="w"> </span>custom-columns<span class="o">=</span><span class="s1">&#39;PV:.metadata.name,NODE:.spec.nodeAffinity.required.nodeSelectorTerms[0].matchExpressions[0].values[0],PATH:.spec.hostPath.path&#39;</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Copy data off-node (example for n8n)</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>ssh<span class="w"> </span>debian@192.168.100.111<span class="w"> </span><span class="s2">&quot;sudo tar czf /tmp/n8n-data.tar.gz -C /var/lib/rancher/k3s/storage/ .&quot;</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>scp<span class="w"> </span>debian@192.168.100.111:/tmp/n8n-data.tar.gz<span class="w"> </span>./backups/
+</code></pre></div>
+<hr />
+<h2 id="2-truenas-nfs-snapshots-zfs">2. TrueNAS NFS Snapshots (ZFS)<a class="headerlink" href="#2-truenas-nfs-snapshots-zfs" title="Permanent link">&para;</a></h2>
+<p>All <code>truenas-nfs</code> PVC data lives under the ZFS dataset backing <code>/mnt/strange/NSF_Prox/k3s/</code>.</p>
+<h3 id="create-a-snapshot">Create a snapshot<a class="headerlink" href="#create-a-snapshot" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ssh<span class="w"> </span>ray@192.168.13.69
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1"># Snapshot the k3s NFS dataset</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>zfs<span class="w"> </span>snapshot<span class="w"> </span>strange/NSF_Prox/k3s@backup-<span class="k">$(</span>date<span class="w"> </span>+%Y%m%d-%H%M%S<span class="k">)</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="c1"># Or snapshot the parent dataset (includes all children)</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>zfs<span class="w"> </span>snapshot<span class="w"> </span>-r<span class="w"> </span>strange/NSF_Prox@backup-<span class="k">$(</span>date<span class="w"> </span>+%Y%m%d-%H%M%S<span class="k">)</span>
+</code></pre></div>
+<h3 id="list-snapshots">List snapshots<a class="headerlink" href="#list-snapshots" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>ssh<span class="w"> </span>ray@192.168.13.69<span class="w"> </span><span class="s2">&quot;zfs list -t snapshot -r strange/NSF_Prox/k3s&quot;</span>
+</code></pre></div>
+<h3 id="restore-from-snapshot">Restore from snapshot<a class="headerlink" href="#restore-from-snapshot" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Rollback to a snapshot (destroys changes after snapshot)</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>ssh<span class="w"> </span>ray@192.168.13.69<span class="w"> </span><span class="s2">&quot;zfs rollback strange/NSF_Prox/k3s@backup-20260228-120000&quot;</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># Or clone to a separate mount for selective recovery</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>ssh<span class="w"> </span>ray@192.168.13.69<span class="w"> </span><span class="s2">&quot;zfs clone strange/NSF_Prox/k3s@backup-20260228-120000 strange/k3s-recovery&quot;</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="c1"># Copy what you need from /mnt/strange/k3s-recovery/</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>ssh<span class="w"> </span>ray@192.168.13.69<span class="w"> </span><span class="s2">&quot;zfs destroy strange/k3s-recovery&quot;</span>
+</code></pre></div>
+<h3 id="replicate-to-another-pool-or-host">Replicate to another pool or host<a class="headerlink" href="#replicate-to-another-pool-or-host" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Send snapshot to a file (off-site backup)</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>ssh<span class="w"> </span>ray@192.168.13.69<span class="w"> </span><span class="s2">&quot;zfs send strange/NSF_Prox/k3s@backup-20260228-120000 &gt; /mnt/backup-drive/k3s-snapshot.zfs&quot;</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># Send to remote TrueNAS</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>ssh<span class="w"> </span>ray@192.168.13.69<span class="w"> </span><span class="s2">&quot;zfs send strange/NSF_Prox/k3s@backup-20260228-120000 | ssh backup-host zfs recv tank/k3s-backup&quot;</span>
+</code></pre></div>
+<h3 id="automate-via-truenas-ui">Automate via TrueNAS UI<a class="headerlink" href="#automate-via-truenas-ui" title="Permanent link">&para;</a></h3>
+<ol>
+<li>TrueNAS web UI &gt; Data Protection &gt; Periodic Snapshot Tasks</li>
+<li>Dataset: <code>strange/NSF_Prox/k3s</code></li>
+<li>Schedule: daily, retain 7 days</li>
+<li>Optionally add a Replication Task to push snapshots off-box</li>
+</ol>
+<hr />
+<h2 id="3-k3s-etcd-snapshots">3. k3s etcd Snapshots<a class="headerlink" href="#3-k3s-etcd-snapshots" title="Permanent link">&para;</a></h2>
+<p>k3s uses embedded etcd on the master node. Snapshots capture all cluster state (deployments, services, configmaps, etc.) but not PVC data.</p>
+<h3 id="save-a-snapshot">Save a snapshot<a class="headerlink" href="#save-a-snapshot" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>ssh<span class="w"> </span>debian@192.168.100.110
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="c1"># On-demand snapshot</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>sudo<span class="w"> </span>k3s<span class="w"> </span>etcd-snapshot<span class="w"> </span>save<span class="w"> </span>--name<span class="w"> </span>manual-backup
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="c1"># Default location: /var/lib/rancher/k3s/server/db/snapshots/</span>
+</code></pre></div>
+<h3 id="list-snapshots_1">List snapshots<a class="headerlink" href="#list-snapshots_1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>ssh<span class="w"> </span>debian@192.168.100.110<span class="w"> </span><span class="s2">&quot;sudo k3s etcd-snapshot list&quot;</span>
+</code></pre></div>
+<h3 id="copy-snapshots-off-node">Copy snapshots off-node<a class="headerlink" href="#copy-snapshots-off-node" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>scp<span class="w"> </span>debian@192.168.100.110:/var/lib/rancher/k3s/server/db/snapshots/manual-backup*<span class="w"> </span>./backups/
+</code></pre></div>
+<h3 id="restore-from-snapshot_1">Restore from snapshot<a class="headerlink" href="#restore-from-snapshot_1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>ssh<span class="w"> </span>debian@192.168.100.110
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="c1"># Stop k3s</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>stop<span class="w"> </span>k3s
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="c1"># Restore</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>sudo<span class="w"> </span>k3s<span class="w"> </span>server<span class="w"> </span>--cluster-reset<span class="w"> </span>--cluster-reset-restore-path<span class="o">=</span>/var/lib/rancher/k3s/server/db/snapshots/manual-backup
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="c1"># Start k3s</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>k3s
+</code></pre></div>
+<h3 id="built-in-automatic-snapshots">Built-in automatic snapshots<a class="headerlink" href="#built-in-automatic-snapshots" title="Permanent link">&para;</a></h3>
+<p>k3s saves etcd snapshots every 12 hours by default, retaining 5. Verify:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>ssh<span class="w"> </span>debian@192.168.100.110<span class="w"> </span><span class="s2">&quot;sudo k3s etcd-snapshot list&quot;</span>
+</code></pre></div>
+<hr />
+<h2 id="4-terraform-state-backup">4. Terraform State Backup<a class="headerlink" href="#4-terraform-state-backup" title="Permanent link">&para;</a></h2>
+<p>Terraform state is local (not remote backend) and gitignored.</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>terraform/terraform.tfstate</code></td>
+<td>Current infrastructure state</td>
+</tr>
+<tr>
+<td><code>terraform/terraform.tfstate.backup</code></td>
+<td>Previous state</td>
+</tr>
+<tr>
+<td><code>terraform/terraform.tfvars</code></td>
+<td>Variables (contains Proxmox credentials)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="back-up">Back up<a class="headerlink" href="#back-up" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>cp<span class="w"> </span>terraform/terraform.tfstate<span class="w"> </span>backups/terraform.tfstate.<span class="k">$(</span>date<span class="w"> </span>+%Y%m%d<span class="k">)</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>cp<span class="w"> </span>terraform/terraform.tfvars<span class="w"> </span>backups/terraform.tfvars.<span class="k">$(</span>date<span class="w"> </span>+%Y%m%d<span class="k">)</span>
+</code></pre></div>
+<p>Store copies in your password manager or encrypted off-site storage. These files contain infrastructure credentials.</p>
+<h3 id="recover-without-state">Recover without state<a class="headerlink" href="#recover-without-state" title="Permanent link">&para;</a></h3>
+<p>If state is lost, the VMs still exist. Re-import:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nb">cd</span><span class="w"> </span>terraform
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>terraform<span class="w"> </span>init
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>terraform<span class="w"> </span>import<span class="w"> </span>proxmox_vm_qemu.k3s_master<span class="w"> </span>proxmox-pve1/qemu/110
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>terraform<span class="w"> </span>import<span class="w"> </span>proxmox_vm_qemu.k3s_worker<span class="o">[</span><span class="m">0</span><span class="o">]</span><span class="w"> </span>proxmox-pve1/qemu/111
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>terraform<span class="w"> </span>import<span class="w"> </span>proxmox_vm_qemu.k3s_worker<span class="o">[</span><span class="m">1</span><span class="o">]</span><span class="w"> </span>proxmox-pve1/qemu/112
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>terraform<span class="w"> </span>import<span class="w"> </span>proxmox_vm_qemu.k3s_worker<span class="o">[</span><span class="m">2</span><span class="o">]</span><span class="w"> </span>proxmox-pve1/qemu/113
+</code></pre></div>
+<p>Exact resource names depend on your <code>.tf</code> definitions. Check <code>terraform/main.tf</code>.</p>
+<hr />
+<h2 id="5-secret-recovery">5. Secret Recovery<a class="headerlink" href="#5-secret-recovery" title="Permanent link">&para;</a></h2>
+<p>Runtime secrets are never committed to git. Recreate them from your password manager using the commands in <code>manifests/secrets/README.md</code>.</p>
+<h3 id="export-existing-secrets-before-disaster">Export existing secrets (before disaster)<a class="headerlink" href="#export-existing-secrets-before-disaster" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># Dump all secrets to a local encrypted file</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="k">for</span><span class="w"> </span>ns<span class="w"> </span><span class="k">in</span><span class="w"> </span>apps<span class="w"> </span>authentik<span class="w"> </span>n8n<span class="w"> </span>vaultwarden<span class="w"> </span>discourse<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">  </span>kubectl<span class="w"> </span>get<span class="w"> </span>secrets<span class="w"> </span>-n<span class="w"> </span><span class="nv">$ns</span><span class="w"> </span>-o<span class="w"> </span>yaml<span class="w"> </span>&gt;&gt;<span class="w"> </span>/tmp/all-secrets.yml
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="k">done</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="c1"># Encrypt and store securely -- never commit this file</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>gpg<span class="w"> </span>-c<span class="w"> </span>/tmp/all-secrets.yml
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>rm<span class="w"> </span>/tmp/all-secrets.yml
+</code></pre></div>
+<h3 id="recreate-from-scratch">Recreate from scratch<a class="headerlink" href="#recreate-from-scratch" title="Permanent link">&para;</a></h3>
+<p>Replace all <code>CHANGE_ME</code> values with real credentials from your password manager:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># apps namespace</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>kubectl<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>code-server-secret<span class="w"> </span>-n<span class="w"> </span>apps<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">PASSWORD</span><span class="o">=</span><span class="s1">&#39;CHANGE_ME&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">  </span>--dry-run<span class="o">=</span>client<span class="w"> </span>-o<span class="w"> </span>yaml<span class="w"> </span><span class="p">|</span><span class="w"> </span>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>-
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>kubectl<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>pangolin-secret<span class="w"> </span>-n<span class="w"> </span>apps<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">PANGOLIN_APP_SECRET</span><span class="o">=</span><span class="s1">&#39;CHANGE_ME_LONG_RANDOM_SECRET&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="w">  </span>--dry-run<span class="o">=</span>client<span class="w"> </span>-o<span class="w"> </span>yaml<span class="w"> </span><span class="p">|</span><span class="w"> </span>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>-
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>
+<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>kubectl<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>notify-channel-secrets<span class="w"> </span>-n<span class="w"> </span>apps<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">TELEGRAM_BOT_TOKEN</span><span class="o">=</span><span class="s1">&#39;CHANGE_ME&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">TELEGRAM_CHAT_ID</span><span class="o">=</span><span class="s1">&#39;CHANGE_ME&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">TWILIO_ACCOUNT_SID</span><span class="o">=</span><span class="s1">&#39;CHANGE_ME&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">TWILIO_AUTH_TOKEN</span><span class="o">=</span><span class="s1">&#39;CHANGE_ME&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">TWILIO_WHATSAPP_FROM</span><span class="o">=</span><span class="s1">&#39;whatsapp:+14155238886&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">TWILIO_WHATSAPP_TO</span><span class="o">=</span><span class="s1">&#39;whatsapp:+10000000000&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">ALERT_SMTP_HOST</span><span class="o">=</span><span class="s1">&#39;smtp.gmail.com&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-18" name="__codelineno-13-18" href="#__codelineno-13-18"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">ALERT_SMTP_PORT</span><span class="o">=</span><span class="s1">&#39;587&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-19" name="__codelineno-13-19" href="#__codelineno-13-19"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">ALERT_EMAIL_USER</span><span class="o">=</span><span class="s1">&#39;CHANGE_ME&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-20" name="__codelineno-13-20" href="#__codelineno-13-20"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">ALERT_EMAIL_PASSWORD</span><span class="o">=</span><span class="s1">&#39;CHANGE_ME&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-21" name="__codelineno-13-21" href="#__codelineno-13-21"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">ALERT_FROM_EMAIL</span><span class="o">=</span><span class="s1">&#39;notify@kwe2.org&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-22" name="__codelineno-13-22" href="#__codelineno-13-22"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">ALERT_TO_EMAIL_1</span><span class="o">=</span><span class="s1">&#39;you@example.com&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-23" name="__codelineno-13-23" href="#__codelineno-13-23"></a><span class="w">  </span>--dry-run<span class="o">=</span>client<span class="w"> </span>-o<span class="w"> </span>yaml<span class="w"> </span><span class="p">|</span><span class="w"> </span>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>-
+<a id="__codelineno-13-24" name="__codelineno-13-24" href="#__codelineno-13-24"></a>
+<a id="__codelineno-13-25" name="__codelineno-13-25" href="#__codelineno-13-25"></a><span class="c1"># authentik namespace</span>
+<a id="__codelineno-13-26" name="__codelineno-13-26" href="#__codelineno-13-26"></a>kubectl<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>authentik-secret<span class="w"> </span>-n<span class="w"> </span>authentik<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-27" name="__codelineno-13-27" href="#__codelineno-13-27"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">AUTHENTIK_SECRET_KEY</span><span class="o">=</span><span class="s1">&#39;CHANGE_ME_LONG_RANDOM_SECRET&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-28" name="__codelineno-13-28" href="#__codelineno-13-28"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">POSTGRES_DB</span><span class="o">=</span><span class="s1">&#39;authentik&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-29" name="__codelineno-13-29" href="#__codelineno-13-29"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">POSTGRES_USER</span><span class="o">=</span><span class="s1">&#39;authentik&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-30" name="__codelineno-13-30" href="#__codelineno-13-30"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">POSTGRES_PASSWORD</span><span class="o">=</span><span class="s1">&#39;CHANGE_ME&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-31" name="__codelineno-13-31" href="#__codelineno-13-31"></a><span class="w">  </span>--dry-run<span class="o">=</span>client<span class="w"> </span>-o<span class="w"> </span>yaml<span class="w"> </span><span class="p">|</span><span class="w"> </span>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>-
+<a id="__codelineno-13-32" name="__codelineno-13-32" href="#__codelineno-13-32"></a>
+<a id="__codelineno-13-33" name="__codelineno-13-33" href="#__codelineno-13-33"></a><span class="c1"># n8n namespace</span>
+<a id="__codelineno-13-34" name="__codelineno-13-34" href="#__codelineno-13-34"></a>kubectl<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>n8n-secret<span class="w"> </span>-n<span class="w"> </span>n8n<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-35" name="__codelineno-13-35" href="#__codelineno-13-35"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">DB_TYPE</span><span class="o">=</span><span class="s1">&#39;sqlite&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-36" name="__codelineno-13-36" href="#__codelineno-13-36"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">N8N_ENCRYPTION_KEY</span><span class="o">=</span><span class="s1">&#39;CHANGE_ME_LONG_RANDOM_SECRET&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-37" name="__codelineno-13-37" href="#__codelineno-13-37"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">N8N_USER_MANAGEMENT_JWT_SECRET</span><span class="o">=</span><span class="s1">&#39;CHANGE_ME_LONG_RANDOM_SECRET&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-38" name="__codelineno-13-38" href="#__codelineno-13-38"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">WEBHOOK_URL</span><span class="o">=</span><span class="s1">&#39;https://n8n.smartmur.ca&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-39" name="__codelineno-13-39" href="#__codelineno-13-39"></a><span class="w">  </span>--dry-run<span class="o">=</span>client<span class="w"> </span>-o<span class="w"> </span>yaml<span class="w"> </span><span class="p">|</span><span class="w"> </span>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>-
+<a id="__codelineno-13-40" name="__codelineno-13-40" href="#__codelineno-13-40"></a>
+<a id="__codelineno-13-41" name="__codelineno-13-41" href="#__codelineno-13-41"></a><span class="c1"># vaultwarden namespace</span>
+<a id="__codelineno-13-42" name="__codelineno-13-42" href="#__codelineno-13-42"></a>kubectl<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>vaultwarden-secret<span class="w"> </span>-n<span class="w"> </span>vaultwarden<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-43" name="__codelineno-13-43" href="#__codelineno-13-43"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">ADMIN_TOKEN</span><span class="o">=</span><span class="s1">&#39;CHANGE_ME_LONG_RANDOM_SECRET&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-44" name="__codelineno-13-44" href="#__codelineno-13-44"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">DOMAIN</span><span class="o">=</span><span class="s1">&#39;https://vault.smartmur.ca&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-45" name="__codelineno-13-45" href="#__codelineno-13-45"></a><span class="w">  </span>--dry-run<span class="o">=</span>client<span class="w"> </span>-o<span class="w"> </span>yaml<span class="w"> </span><span class="p">|</span><span class="w"> </span>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>-
+<a id="__codelineno-13-46" name="__codelineno-13-46" href="#__codelineno-13-46"></a>
+<a id="__codelineno-13-47" name="__codelineno-13-47" href="#__codelineno-13-47"></a><span class="c1"># discourse namespace</span>
+<a id="__codelineno-13-48" name="__codelineno-13-48" href="#__codelineno-13-48"></a>kubectl<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>discourse-secret<span class="w"> </span>-n<span class="w"> </span>discourse<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-49" name="__codelineno-13-49" href="#__codelineno-13-49"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">POSTGRESQL_PASSWORD</span><span class="o">=</span><span class="s1">&#39;CHANGE_ME&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-50" name="__codelineno-13-50" href="#__codelineno-13-50"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">DISCOURSE_EMAIL</span><span class="o">=</span><span class="s1">&#39;admin@example.com&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-51" name="__codelineno-13-51" href="#__codelineno-13-51"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">DISCOURSE_PASSWORD</span><span class="o">=</span><span class="s1">&#39;CHANGE_ME&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-52" name="__codelineno-13-52" href="#__codelineno-13-52"></a><span class="w">  </span>--dry-run<span class="o">=</span>client<span class="w"> </span>-o<span class="w"> </span>yaml<span class="w"> </span><span class="p">|</span><span class="w"> </span>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>-
+</code></pre></div>
+<hr />
+<h2 id="6-full-cluster-restore-bare-metal">6. Full Cluster Restore (Bare Metal)<a class="headerlink" href="#6-full-cluster-restore-bare-metal" title="Permanent link">&para;</a></h2>
+<p>This rebuilds the entire cluster from scratch using the repo's bootstrap scripts.</p>
+<h3 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Proxmox hosts online (PVE1 at 192.168.100.100)</li>
+<li>TrueNAS online with NFS exports intact at 192.168.13.69</li>
+<li>Control node has: <code>bash</code>, <code>git</code>, <code>terraform</code>, <code>ansible</code>, <code>kubectl</code>, <code>helm</code></li>
+<li>Repo cloned: <code>git clone &lt;repo-url&gt; &amp;&amp; cd k3s-cluster</code></li>
+</ul>
+<h3 id="step-by-step">Step-by-step<a class="headerlink" href="#step-by-step" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1"># 1. Install tooling on control node</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>bash<span class="w"> </span>scripts/00-install-tools.sh
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="c1"># 2. Create Proxmox VM template (skip if template already exists)</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>bash<span class="w"> </span>scripts/00-create-proxmox-template.sh
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="c1"># 3. Restore terraform.tfvars from backup</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>cp<span class="w"> </span>backups/terraform.tfvars<span class="w"> </span>terraform/terraform.tfvars
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="c1"># Or recreate from example:</span>
+<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>cp<span class="w"> </span>terraform/terraform.tfvars.example<span class="w"> </span>terraform/terraform.tfvars
+<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="c1"># Edit with real Proxmox credentials</span>
+<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>
+<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a><span class="c1"># 4. Provision VMs</span>
+<a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a>bash<span class="w"> </span>scripts/01-provision.sh
+<a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a>
+<a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a><span class="c1"># 5. Bootstrap k3s cluster</span>
+<a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a><span class="nb">export</span><span class="w"> </span><span class="nv">K3S_TOKEN</span><span class="o">=</span><span class="s2">&quot;your-token-min-20-chars&quot;</span>
+<a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a>bash<span class="w"> </span>scripts/02-cluster-setup.sh
+<a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a>
+<a id="__codelineno-14-20" name="__codelineno-14-20" href="#__codelineno-14-20"></a><span class="c1"># 6. Set up storage (NFS provisioner, MetalLB, Traefik)</span>
+<a id="__codelineno-14-21" name="__codelineno-14-21" href="#__codelineno-14-21"></a>bash<span class="w"> </span>scripts/03-storage-setup.sh
+<a id="__codelineno-14-22" name="__codelineno-14-22" href="#__codelineno-14-22"></a>
+<a id="__codelineno-14-23" name="__codelineno-14-23" href="#__codelineno-14-23"></a><span class="c1"># 7. Recreate all runtime secrets (Section 5 above)</span>
+<a id="__codelineno-14-24" name="__codelineno-14-24" href="#__codelineno-14-24"></a><span class="c1"># ... run all kubectl create secret commands ...</span>
+<a id="__codelineno-14-25" name="__codelineno-14-25" href="#__codelineno-14-25"></a>
+<a id="__codelineno-14-26" name="__codelineno-14-26" href="#__codelineno-14-26"></a><span class="c1"># 8. Deploy all apps</span>
+<a id="__codelineno-14-27" name="__codelineno-14-27" href="#__codelineno-14-27"></a>bash<span class="w"> </span>scripts/04-deploy-apps.sh
+<a id="__codelineno-14-28" name="__codelineno-14-28" href="#__codelineno-14-28"></a>
+<a id="__codelineno-14-29" name="__codelineno-14-29" href="#__codelineno-14-29"></a><span class="c1"># 9. (Optional) Restore etcd snapshot instead of fresh deploy</span>
+<a id="__codelineno-14-30" name="__codelineno-14-30" href="#__codelineno-14-30"></a><span class="c1"># If you have an etcd snapshot, use it after step 5 instead of steps 6-8:</span>
+<a id="__codelineno-14-31" name="__codelineno-14-31" href="#__codelineno-14-31"></a><span class="c1">#   sudo k3s server --cluster-reset --cluster-reset-restore-path=/path/to/snapshot</span>
+<a id="__codelineno-14-32" name="__codelineno-14-32" href="#__codelineno-14-32"></a><span class="c1">#   Then recreate any missing secrets.</span>
+<a id="__codelineno-14-33" name="__codelineno-14-33" href="#__codelineno-14-33"></a>
+<a id="__codelineno-14-34" name="__codelineno-14-34" href="#__codelineno-14-34"></a><span class="c1"># 10. Restore PVC data from TrueNAS ZFS snapshots</span>
+<a id="__codelineno-14-35" name="__codelineno-14-35" href="#__codelineno-14-35"></a><span class="c1"># If NFS data survived, PVCs auto-bind. If not:</span>
+<a id="__codelineno-14-36" name="__codelineno-14-36" href="#__codelineno-14-36"></a>ssh<span class="w"> </span>ray@192.168.13.69<span class="w"> </span><span class="s2">&quot;zfs rollback strange/NSF_Prox/k3s@&lt;snapshot-name&gt;&quot;</span>
+<a id="__codelineno-14-37" name="__codelineno-14-37" href="#__codelineno-14-37"></a>
+<a id="__codelineno-14-38" name="__codelineno-14-38" href="#__codelineno-14-38"></a><span class="c1"># 11. Restore local-path PVC data</span>
+<a id="__codelineno-14-39" name="__codelineno-14-39" href="#__codelineno-14-39"></a><span class="c1"># Copy backed-up tarballs to the correct worker node paths</span>
+<a id="__codelineno-14-40" name="__codelineno-14-40" href="#__codelineno-14-40"></a>
+<a id="__codelineno-14-41" name="__codelineno-14-41" href="#__codelineno-14-41"></a><span class="c1"># 12. Sync Dockhand contexts</span>
+<a id="__codelineno-14-42" name="__codelineno-14-42" href="#__codelineno-14-42"></a>bash<span class="w"> </span>scripts/05-sync-dockhand-contexts.sh
+</code></pre></div>
+<h3 id="restoring-kubeconfig">Restoring kubeconfig<a class="headerlink" href="#restoring-kubeconfig" title="Permanent link">&para;</a></h3>
+<p>After step 5, <code>02-cluster-setup.sh</code> generates a new kubeconfig. If you need it manually:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>scp<span class="w"> </span>debian@192.168.100.110:~/.kube/config<span class="w"> </span>./kubeconfig-raw.yml
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="c1"># Update server address if using SSH tunnel</span>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="s1">&#39;s|https://127.0.0.1:6443|https://127.0.0.1:7443|&#39;</span><span class="w"> </span>./kubeconfig-raw.yml
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="nb">export</span><span class="w"> </span><span class="nv">KUBECONFIG</span><span class="o">=</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>/kubeconfig-raw.yml
+</code></pre></div>
+<hr />
+<h2 id="7-single-app-restore">7. Single App Restore<a class="headerlink" href="#7-single-app-restore" title="Permanent link">&para;</a></h2>
+<p>To redeploy one app without rebuilding the cluster.</p>
+<h3 id="example-restore-vaultwarden">Example: restore vaultwarden<a class="headerlink" href="#example-restore-vaultwarden" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c1"># 1. Recreate the secret</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>kubectl<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>vaultwarden-secret<span class="w"> </span>-n<span class="w"> </span>vaultwarden<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">ADMIN_TOKEN</span><span class="o">=</span><span class="s1">&#39;real-token-from-password-manager&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">DOMAIN</span><span class="o">=</span><span class="s1">&#39;https://vault.smartmur.ca&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="w">  </span>--dry-run<span class="o">=</span>client<span class="w"> </span>-o<span class="w"> </span>yaml<span class="w"> </span><span class="p">|</span><span class="w"> </span>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>-
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>
+<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="c1"># 2. Apply the manifest</span>
+<a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>manifests/apps/vaultwarden/vaultwarden.yml
+<a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a>
+<a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a><span class="c1"># 3. Verify</span>
+<a id="__codelineno-16-11" name="__codelineno-16-11" href="#__codelineno-16-11"></a>kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>vaultwarden<span class="w"> </span>-w
+</code></pre></div>
+<h3 id="if-pvc-data-is-lost">If PVC data is lost<a class="headerlink" href="#if-pvc-data-is-lost" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># Restore from ZFS snapshot (NFS-backed PVCs)</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>ssh<span class="w"> </span>ray@192.168.13.69
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>zfs<span class="w"> </span>list<span class="w"> </span>-t<span class="w"> </span>snapshot<span class="w"> </span>-r<span class="w"> </span>strange/NSF_Prox/k3s<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>vaultwarden
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>zfs<span class="w"> </span>clone<span class="w"> </span>strange/NSF_Prox/k3s@&lt;snapshot&gt;<span class="w"> </span>strange/k3s-vw-recovery
+<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>cp<span class="w"> </span>-a<span class="w"> </span>/mnt/strange/k3s-vw-recovery/&lt;vaultwarden-pvc-dir&gt;/*<span class="w"> </span>/mnt/strange/NSF_Prox/k3s/&lt;vaultwarden-pvc-dir&gt;/
+<a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>zfs<span class="w"> </span>destroy<span class="w"> </span>strange/k3s-vw-recovery
+<a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>
+<a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a><span class="c1"># Restart the pod to pick up restored data</span>
+<a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a>kubectl<span class="w"> </span>rollout<span class="w"> </span>restart<span class="w"> </span>deployment/vaultwarden<span class="w"> </span>-n<span class="w"> </span>vaultwarden
+</code></pre></div>
+<h3 id="general-pattern-for-any-app">General pattern for any app<a class="headerlink" href="#general-pattern-for-any-app" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Recreate the app's secret (see Section 5 or <code>manifests/secrets/README.md</code>).</li>
+<li>Apply the manifest: <code>kubectl apply -f manifests/apps/&lt;app&gt;/&lt;app&gt;.yml</code></li>
+<li>Restore PVC data from ZFS snapshot if needed.</li>
+<li>Verify pod is running and healthy.</li>
+</ol>
+<hr />
+<h2 id="8-validation">8. Validation<a class="headerlink" href="#8-validation" title="Permanent link">&para;</a></h2>
+<p>Run after any restore to confirm the cluster is healthy.</p>
+<h3 id="cluster-health">Cluster health<a class="headerlink" href="#cluster-health" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>nodes
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-A
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>kubectl<span class="w"> </span>get<span class="w"> </span>pv
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>kubectl<span class="w"> </span>get<span class="w"> </span>pvc<span class="w"> </span>-A
+</code></pre></div>
+<h3 id="storage">Storage<a class="headerlink" href="#storage" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="c1"># NFS provisioner running</span>
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>storage
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="c1"># PVCs bound</span>
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>kubectl<span class="w"> </span>get<span class="w"> </span>pvc<span class="w"> </span>-A<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-v<span class="w"> </span>Bound
+<a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="c1"># (should return nothing)</span>
+<a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a>
+<a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="c1"># TrueNAS NFS accessible from nodes</span>
+<a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a>ssh<span class="w"> </span>debian@192.168.100.111<span class="w"> </span><span class="s2">&quot;showmount -e 192.168.13.69&quot;</span>
+</code></pre></div>
+<h3 id="networking">Networking<a class="headerlink" href="#networking" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="c1"># MetalLB and Traefik</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>kubectl<span class="w"> </span>get<span class="w"> </span>svc<span class="w"> </span>traefik<span class="w"> </span>-n<span class="w"> </span>traefik
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="c1"># Should show EXTERNAL-IP 192.168.100.120</span>
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="c1"># IngressRoutes</span>
+<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a>kubectl<span class="w"> </span>get<span class="w"> </span>ingressroute<span class="w"> </span>-A
+</code></pre></div>
+<h3 id="app-level">App-level<a class="headerlink" href="#app-level" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># Check each app responds</span>
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="k">for</span><span class="w"> </span>url<span class="w"> </span><span class="k">in</span><span class="w"> </span>vault.smartmur.ca<span class="w"> </span>n8n.smartmur.ca<span class="w"> </span>home.smartmur.ca<span class="w"> </span>auth.smartmur.ca<span class="w"> </span>code.smartmur.ca<span class="w"> </span>blog.smartmur.ca<span class="w"> </span>k8s.smartmur.ca<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="w">  </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$url</span><span class="s2">: &quot;</span><span class="p">;</span><span class="w"> </span>curl<span class="w"> </span>-sk<span class="w"> </span>-o<span class="w"> </span>/dev/null<span class="w"> </span>-w<span class="w"> </span><span class="s2">&quot;%{http_code}&quot;</span><span class="w"> </span>https://<span class="nv">$url</span><span class="p">;</span><span class="w"> </span><span class="nb">echo</span>
+<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="k">done</span>
+</code></pre></div>
+<h3 id="secrets-present">Secrets present<a class="headerlink" href="#secrets-present" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>secret<span class="w"> </span>vaultwarden-secret<span class="w"> </span>-n<span class="w"> </span>vaultwarden
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>kubectl<span class="w"> </span>get<span class="w"> </span>secret<span class="w"> </span>n8n-secret<span class="w"> </span>-n<span class="w"> </span>n8n
+<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>kubectl<span class="w"> </span>get<span class="w"> </span>secret<span class="w"> </span>authentik-secret<span class="w"> </span>-n<span class="w"> </span>authentik
+<a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>kubectl<span class="w"> </span>get<span class="w"> </span>secret<span class="w"> </span>code-server-secret<span class="w"> </span>-n<span class="w"> </span>apps
+<a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>kubectl<span class="w"> </span>get<span class="w"> </span>secret<span class="w"> </span>discourse-secret<span class="w"> </span>-n<span class="w"> </span>discourse
+<a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a>kubectl<span class="w"> </span>get<span class="w"> </span>secret<span class="w"> </span>pangolin-secret<span class="w"> </span>-n<span class="w"> </span>apps
+<a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a>kubectl<span class="w"> </span>get<span class="w"> </span>secret<span class="w"> </span>notify-channel-secrets<span class="w"> </span>-n<span class="w"> </span>apps
+</code></pre></div>
+<h3 id="etcd-health">etcd health<a class="headerlink" href="#etcd-health" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>ssh<span class="w"> </span>debian@192.168.100.110<span class="w"> </span><span class="s2">&quot;sudo k3s etcd-snapshot list&quot;</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
